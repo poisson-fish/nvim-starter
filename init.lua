@@ -60,7 +60,29 @@ require("mason-lspconfig").setup_handlers({ -- Handles attaching for any LSP ins
 
   function(server_name)
     require('lspconfig')[server_name].setup({
+
       on_attach = function(client, bufnr)
+        if server_name == 'lua_ls' then -- Add a conditional check
+          require('lspconfig')[server_name].setup({
+            settings = {
+              Lua = {
+                runtime = {
+                  version = 'LuaJIT',
+                },
+                diagnostics = {
+                  globals = { 'vim', 'require' },
+                },
+                workspace = {
+                  library = vim.api.nvim_get_runtime_file("", true),
+                },
+                telemetry = {
+                  enable = false,
+                },
+              },
+            },
+          })
+        end
+
         -- Enable completion triggered by <c-x><c-o>
         vim.bo[bufnr].omnifunc = 'v:lua.vim.lsp.omnifunc'
 
@@ -213,28 +235,7 @@ require("mason-lspconfig").setup_handlers({ -- Handles attaching for any LSP ins
         --	)
       end
     })
-  end,
-  -- enable vim lib for editing init.lua
-  ["lua_ls"] = function()
-    require('lspconfig').lua_ls.setup {
-      settings = {
-        Lua = {
-          runtime = {
-            version = 'LuaJIT',
-          },
-          diagnostics = {
-            globals = { 'vim', 'require' },
-          },
-          workspace = {
-            library = vim.api.nvim_get_runtime_file("", true),
-          },
-          telemetry = {
-            enable = false,
-          },
-        },
-      },
-    }
-  end,
+  end
 })
 
 

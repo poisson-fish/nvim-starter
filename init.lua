@@ -11,6 +11,13 @@ if not vim.loop.fs_stat(lazypath) then
   })
 end
 vim.opt.rtp:prepend(lazypath)
+
+vim.keymap.set('n', '<space>e', vim.diagnostic.open_float,  { desc = "✨diagnostics: open float" })
+vim.keymap.set('n', '<space>D', vim.diagnostic.goto_prev, { desc = "✨diagnostics: goto prev" })
+vim.keymap.set('n', '<space>d', vim.diagnostic.goto_next, { desc = "✨diagnostics: goto next" })
+vim.keymap.set('n', '<space>q', vim.diagnostic.setloclist, { desc = "✨diagnostics: set loc list" })
+vim.keymap.set('n', '<space>e', vim.diagnostic.setloclist, { desc = "✨filetree: toggle" })
+
 require("lazy").setup({
   "williamboman/mason.nvim",
   "williamboman/mason-lspconfig.nvim",
@@ -26,11 +33,17 @@ require("lazy").setup({
   "rcarriga/nvim-dap-ui",
   "nvim-tree/nvim-tree.lua",
   "nvim-tree/nvim-web-devicons",
+  {'akinsho/bufferline.nvim', version = "*", dependencies = 'nvim-tree/nvim-web-devicons'},
   {
     "nvim-lualine/lualine.nvim",
     dependencies = { "nvim-tree/nvim-web-devicons" }
   },
-  "Shatur/neovim-ayu",
+  {
+    "folke/tokyonight.nvim",
+    lazy = false,
+    priority = 1000,
+    opts = {},
+  },
   "nvim-treesitter/nvim-treesitter",
   {
     "mrcjkb/rustaceanvim",
@@ -247,16 +260,6 @@ require("mason-lspconfig").setup_handlers({ -- Handles attaching for any LSP ins
 
 require("dapui").setup()
 
-require('ayu').setup({
-  mirage = false, -- Set to `true` to use `mirage` variant instead of `dark` for dark background.
-  overrides = {}, -- A dictionary of group names, each associated with a dictionary of parameters (`bg`, `fg`, `sp` and `style`) and colors in hex.
-})
-require('lualine').setup({
-  options = {
-    theme = 'ayu',
-  },
-})
-require('ayu').colorscheme()
 -- General settings
 vim.opt.number = true         -- Enable line numbers
 vim.opt.relativenumber = true -- Enable relative line numbers
@@ -346,3 +349,12 @@ require("nvim-tree").setup({
     dotfiles = true,
   },
 })
+vim.opt.termguicolors = true
+require("bufferline").setup{}
+
+require('lualine').setup({
+  options = {
+    theme = 'tokyonight',
+  },
+})
+vim.cmd[[colorscheme tokyonight-night]]

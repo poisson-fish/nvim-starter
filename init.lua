@@ -54,13 +54,24 @@ require("lazy").setup({
 
 require("mason").setup()
 require("mason-lspconfig").setup()
--- Mason auto LSP config
 
 require("mason-lspconfig").setup_handlers({ -- Handles attaching for any LSP installed by mason
 
   function(server_name)
     require('lspconfig')[server_name].setup({
-
+      diagnostics = {
+        underline = true,
+        update_in_insert = false,
+        virtual_text = {
+          spacing = 4,
+          source = "if_many",
+          prefix = "●",
+        },
+        severity_sort = true,
+      },
+      inlay_hints = {
+        enabled = true,
+      },
       on_attach = function(client, bufnr)
         if server_name == 'lua_ls' then -- Add a conditional check
           require('lspconfig')[server_name].setup({
@@ -94,7 +105,7 @@ require("mason-lspconfig").setup_handlers({ -- Handles attaching for any LSP ins
           else
             if client.server_capabilities.inlayHintProvider then
               vim.g.inlay_hints_visible = true
-              vim.lsp.inlay_hint(bufnr, true)
+              vim.lsp.inlay_hint.enable(bufnr, true)
             else
               print("no inlay hints available")
             end
@@ -192,7 +203,7 @@ require("mason-lspconfig").setup_handlers({ -- Handles attaching for any LSP ins
         vim.keymap.set(
           "n",
           "<space>la",
-          "<cmd>CodeActionMenu<CR>",
+          vim.lsp.buf.code_action,
           vim.tbl_extend("force", bufopts, { desc = "✨lsp code action" })
         )
         vim.keymap.set(
@@ -227,12 +238,6 @@ require("mason-lspconfig").setup_handlers({ -- Handles attaching for any LSP ins
           vim.lsp.buf.rename,
           vim.tbl_extend("force", bufopts, { desc = "✨lsp rename symbol" })
         )
-        --	vim.keymap.set(
-        --		"n",
-        --		"<space>la",
-        --		vim.lsp.buf.code_action,
-        --		vim.tbl_extend("force", bufopts, { desc = "✨lsp code action" })
-        --	)
       end
     })
   end
